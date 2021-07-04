@@ -10,6 +10,10 @@
         <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
         <link href="{{ asset('backend/css/styles.css') }}" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js" crossorigin="anonymous"></script>
+
+        {{-- after include css --}}
+        {{-- muc dich chen css o view con ra ngoai nay --}}
+        @stack('stylesheets')
     </head>
     <body class="sb-nav-fixed">
 
@@ -39,5 +43,8 @@
         <script src="assets/demo/chart-bar-demo.js"></script> --}}
         <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" crossorigin="anonymous"></script>
         <script src="{{ asset('backend/js/datatables-simple-demo.js') }}"></script>
+
+        {{-- after include js --}}
+        @stack('javascripts')
     </body>
 </html>

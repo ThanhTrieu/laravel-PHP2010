@@ -12,6 +12,6 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '*/*'
+        // truong hop rat dac biet thi moi hack pass qua token laravel
     ];
 }

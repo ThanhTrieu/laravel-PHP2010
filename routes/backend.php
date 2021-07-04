@@ -18,24 +18,27 @@ use App\Http\Controllers\Backend\BrandController;
 |
 */
 
+Route::prefix('admin')
+  ->as('admin.')
+  ->middleware('backend.admin.login')
+  ->group(function(){
+    // account
+    Route::get('account',[AccountController::class, 'index'])->name('account');
+    //backend/dashboard
+    Route::get('dashboard',[DashboardController::class, 'index'])->name('dashboard');
+    Route::get('dashboard/test',[DashboardController::class, 'test']);
+    Route::get('dashboard/demo',[DashboardController::class, 'demo']);
+    // brand
+    Route::get('brand',[BrandController::class, 'index'])->name('brand');
+});
+
 Route::prefix('admin')->as('admin.')->group(function () {
-  // as('admin.') : tien ro cho name cua routes
-
   // backend/login
-  Route::get('login',[LoginController::class, 'index'])->name('login');
+  Route::get('login',[LoginController::class, 'index'])
+    ->middleware('if.backend.admin.login')
+    ->name('login');
+  // handle login
   Route::post('handle-login', [LoginController::class, 'handleLogin'])->name('handle.login');
-
   // backend/logout
-  Route::get('logout',[LoginController::class, 'logout']);
-
-  // account
-  Route::get('account',[AccountController::class, 'index'])->name('account');
-
-  //backend/dashboard
-  Route::get('dashboard',[DashboardController::class, 'index'])->name('dashboard');
-  Route::get('dashboard/test',[DashboardController::class, 'test']);
-  Route::get('dashboard/demo',[DashboardController::class, 'demo']);
-
-  // brand
-  Route::get('brand',[BrandController::class, 'index'])->name('brand');
+  Route::post('logout',[LoginController::class, 'logout'])->name('handle.logout');
 });
