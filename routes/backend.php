@@ -30,6 +30,9 @@ Route::prefix('admin')
     Route::get('dashboard/demo',[DashboardController::class, 'demo']);
     // brand
     Route::get('brand',[BrandController::class, 'index'])->name('brand');
+    Route::get('insert-brand',[BrandController::class, 'add'])->name('add.brand');
+    Route::post('handle-insert-brand',[BrandController::class, 'handleAdd'])->name('handle.add.brand');
+    Route::post('delete-brand',[BrandController::class,'deleteBrand'])->name('delete.brand');
 });
 
 Route::prefix('admin')->as('admin.')->group(function () {
