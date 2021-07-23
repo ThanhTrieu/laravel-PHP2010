@@ -6,15 +6,95 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\StorePostBrand;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 class BrandController extends Controller
 {
+    const LIMIT_ITEM = 2; // 2 thuong hieu tren 1 trang
     public function index()
     {
-        $dataBrands = DB::table('brands')->get();
+        $dataBrands = DB::table('brands')->paginate(self::LIMIT_ITEM);
         return view('backend.brand.index',[
             'brands' => $dataBrands
         ]);
+    }
+
+    public function edit(Request $request)
+    {
+        $id = $request->id;
+        $id = is_numeric($id) ? $id : 0;
+        // lay chi tiet thuong hieu theo ID
+        $infoBrand = DB::table('brands')->where('id',$id)->first();
+       
+        if($infoBrand !== null) {
+            // co du lieu theo id
+            return view('backend.brand.edit',[
+                'info' => $infoBrand
+            ]);
+        } else {
+            // khong co du lieu
+            return view('backend.not_found.brand');
+        }
+    }
+
+    public function handleEdit(Request $request)
+    {
+        // de cac ban tu lam validate
+        // logo anh : neu nguoi ko chon anh - giu anh cu
+        $nameBrand = $request->input('nameBrand');
+        $addBrand  = $request->input('addBrand');
+        $descBrand = $request->input('descBrand');
+        $status = $request->input('statusBrand');
+        $status = $status === '1' ? $status : '0';
+
+        $id = $request->id;
+        $id = is_numeric($id) ? $id : 0;
+        $infoBrand = DB::table('brands')->where('id',$id)->first();
+
+        if($infoBrand === null){
+            return redirect()->route('admin.brand.error');
+        }
+
+        $oldLogo = $infoBrand->logo;
+        // upload anh
+        if($request->hasFile('logoBrand')){
+            if($request->file('logoBrand')->isValid()){
+                // xoa anh cu
+                File::delete('public/storage/images/'.$oldLogo);
+
+                // tien hanh upload
+                $oldLogo = $request->file('logoBrand')->getClientOriginalName();
+                $dateCreate = date('Y-m-d H:i:s');
+                $timeCreate = strtotime($dateCreate);
+                $oldLogo = $timeCreate.'-'.$oldLogo;
+                
+                // anh day vao thu muc public
+                $request->file('logoBrand')->move('storage/images', $oldLogo);
+            }
+        }
+
+        // update
+        $update = DB::table('brands')->where('id', $id)->update([
+            'name' => $nameBrand,
+            'address' => $addBrand,
+            'description' => $descBrand,
+            'logo' => $oldLogo,
+            'status' => $status,
+            'updated_at' => date('Y-m-d H:i:s')
+        ]);
+
+        if($update){
+            return redirect()->route('admin.brand');
+        } else {
+            return redirect()->route('admin.brand.edit',['slug'=> Str::slug($infoBrand->name), 'id' => $id]);
+        }
+
+    }
+
+    public function errorBrand()
+    {
+        return view('backend.not_found.brand');
     }
 
     public function add()
