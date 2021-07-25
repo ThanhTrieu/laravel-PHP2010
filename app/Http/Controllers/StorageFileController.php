@@ -9,9 +9,8 @@ use Illuminate\Http\Response;
 class StorageFileController extends Controller
 {
     public function getPubliclyStorgeFile($filename)
-
     {
-        $path = storage_path('app/public/image/'. $filename);
+        $path = storage_path('public/storage/image/'. $filename);
 
         if (!File::exists($path)) {
             abort(404);
